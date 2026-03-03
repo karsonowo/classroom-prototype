@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>課室教材資源庫</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Noto Sans TC", "PingFang TC", "Microsoft YaHei", Arial, sans-serif;
+      background-color: #f8f9fa;
+      color: #fff;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Top & Bottom Navs */
+    .top-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 10vh;
+      background-color: #2B469C;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 3rem;
+      z-index: 1000;
+      font-weight: 500;
+    }
+
+    .top-nav .logo {
+      font-size: 1.6rem;
+      font-weight: 700;
+    }
+
+    .top-nav .right {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .dropdown {
+      position: relative;
+    }
+
+    .dropdown-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: 0.6rem 1rem;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #003366;
+      min-width: 160px;
+      top: 100%;
+      right: 0;
+    }
+
+    .dropdown-content a {
+      color: white;
+      padding: 0.8rem 1.2rem;
+      text-decoration: none;
+      display: block;
+    }
+
+    .dropdown-content a:hover {
+      background-color: #0055b3;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    .nav-btn {
+      background: white;
+      color: #2B469C;
+      border: none;
+      padding: 0.7rem 1.4rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 10vh;
+      background-color: #2B469C;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .bottom-nav img {
+      height: 65px;
+      width: auto;
+    }
+
+    /* Main Content */
+    .main-wrapper {
+      height: 80vh;
+      margin-top: 10vh;
+      padding: 1.5rem 0;
+      overflow-y: auto;
+      
+      margin-bottom: 15vh;
+    }
+
+    .content-container {
+      width: 80%;
+      max-width: 1440px;
+      margin: 0 auto;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .top-section {
+      flex: 1;
+      display: flex;
+      gap: 1.5rem;
+      min-height: 60vh;
+    }
+
+    .banner {
+      flex: 70;
+      background-color: #2B469C;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .banner a,
+    .banner a:visited,
+    .banner a:link {
+      display: block;
+      width: 100%;
+      height: 100%;
+      text-decoration: none;
+      color: white;
+    }
+
+    .banner img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .sidebar-stack {
+      flex: 34;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      position: relative;
+    }
+    
+    /* Remove gap when login is expanded */
+    .sidebar-stack:has(#expand-login:checked) {
+      gap: 0 !important;
+    }
+
+    /* Expand toggle */
+    .expand-toggle {
+      display: none;
+    }
+
+    /* Login label (normal state) */
+    .login-label {
+      flex: 1;
+      background-color: #2B469C;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      font-weight: 600;
+      text-align: center;
+      border: 1px solid #003366;
+      cursor: pointer;
+      transition: all 0.4s ease;
+      color: white;
+      text-decoration: none;
+    }
+
+    /* Expanded state */
+    #expand-login:checked + .login-label {
+      flex: 1 1 100%;
+      align-items: flex-start;
+      justify-content: space-between;     /* helps push ribbon to bottom */
+      padding: 1.2rem 1.2rem 0 1.2rem;    /* no bottom padding on container */
+      padding: 1.2rem;
+      font-size: 1rem;
+      overflow-y: auto;
+      overflow-x: hidden;
+      z-index: 2;
+    }
+
+    #expand-login:checked + .login-label .normal-text {
+      display: none;
+    }
+
+    #expand-login:checked + .login-label .expand-content {
+      display: block;
+    }
+
+    .expand-content {
+      display: none;
+      width: 100%;
+      padding: 1rem 1.5rem;
+      text-align: left;
+    }
+
+    .expand-content h2 {
+      font-size: 1.8rem;
+      margin: 0 0 1rem 0;
+      color: white;
+      text-align: left;
+    }
+
+    .form-group {
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.4rem;
+      font-size: 1.05rem;
+      color: #ddd;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="password"] {
+      width: 100%;
+      padding: 0.85rem;
+      border: none;
+      border-radius: 4px;
+      background-color: #1e357a;
+      color: white;
+      font-size: 1.05rem;
+    }
+
+    .form-group input::placeholder {
+      color: #a0b0d0;
+    }
+
+    .remember {
+      display: flex;
+      align-items: center;
+      margin: 1rem 0 1.4rem 0;
+      font-size: 1rem;
+      color: #ddd;
+    }
+
+    .remember input[type="checkbox"] {
+      margin-right: 0.7rem;
+      accent-color: #fff;
+    }
+
+    .login-btn-wrapper {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 0.8rem;
+    }
+
+    .login-btn {
+      background-color: #ffffff;
+      color: #2B469C;
+      border: none;
+      padding: 0.85rem 2.2rem;
+      font-size: 1.15rem;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .login-btn:hover {
+      background-color: #e8e8ff;
+    }
+
+    .close-label {
+      display: block;
+      margin: 1.2rem auto 0;
+      font-size: 2.4rem;
+      color: white;
+      cursor: pointer;
+      text-align: center;
+      line-height: 1;
+    }
+
+    /* Hide/collapse eShop when expanded */
+    #expand-login:checked ~ .eshop-link {
+      flex: 0 0 0;
+      opacity: 0;
+      visibility: hidden;
+      height: 0;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      transition: all 0.4s ease;
+    }
+
+    .eshop-link {
+      flex: 1;
+      background-color: #2B469C;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      font-weight: 600;
+      text-align: center;
+      border: 1px solid #003366;
+      text-decoration: none;
+      color: white;
+      transition: all 0.4s ease;
+    }
+
+    /* Bottom rows */
+    .bottom-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+    }
+	.bottom-row .bottom-block {
+	  overflow: hidden;
+	}
+
+    .bottom-block a,
+    .bottom-block a:visited,
+    .bottom-block a:link {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      background-color: #2B469C;
+      font-size: 1.5rem;
+      font-weight: 600;
+      border: 1px solid #003366;
+      text-decoration: none;
+      transition: opacity 0.2s;
+      min-height: 27vh;
+      color: white;
+    }
+
+    .bottom-block a:hover {
+      opacity: 0.92;
+    }
+
+    /* Row for remember + forget password */
+    .remember-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin: 1rem 0 1.4rem 0;
+      font-size: 1rem;
+      color: #ddd;
+    }
+
+    .remember {
+      display: flex;
+      align-items: center;
+    }
+
+    .remember input[type="checkbox"] {
+      margin-right: 0.7rem;
+      accent-color: #fff;
+    }
+
+    /* Forget password link - plain text style */
+    .forget-link,
+    .forget-link:visited,
+    .forget-link:link {
+      color: #ddd;
+      text-decoration: none;
+      font-size: 1rem;
+    }
+
+    .forget-link:hover {
+      text-decoration: underline;
+      color: #fff;
+    }
+
+    /* Retract ribbon at bottom */
+    .close-ribbon {
+      display: block;
+      margin: 4rem 0 0 0;                     /* centered */
+      padding: 0;
+      text-align: center;
+      cursor: pointer;
+      width: 100%;
+    }
+
+    .close-ribbon .triangle {
+      font-size: 1.2rem;
+      color: white;
+      line-height: 1;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="top-nav">
+    <div class="logo">課室教材資源庫</div>
+    <div class="right">
+      <div class="dropdown"><button class="dropdown-btn">程度 ▼</button><div class="dropdown-content"><a href="/primary">小學</a><a href="/secondary">中學</a></div></div>
+      <div class="dropdown"><button class="dropdown-btn">科目 ▼</button><div class="dropdown-content"><a href="/chinese">中文</a><a href="/english">英文</a><a href="/mathematics">數學</a></div></div>
+      <div class="dropdown"><button class="dropdown-btn">應試 ▼</button><div class="dropdown-content"><a href="/hkat">HKAT</a><a href="/tsa">TSA</a><a href="/sspa">SSPA</a><a href="/hkdse">HKDSE</a></div></div>
+      <div class="dropdown"><button class="dropdown-btn">主題 ▼</button><div class="dropdown-content"><a href="/idiom">成語天地</a><a href="/grammar">語法世界</a></div></div>
+      <button class="nav-btn">Login</button>
+      <button class="nav-btn">Register</button>
+    </div>
+  </nav>
+
+  <div class="main-wrapper">
+    <div class="content-container">
+
+      <div class="top-section">
+        <div class="banner">
+          <a href="/promo-listening-integrated-skills">
+            <img src="https://classroom.com.hk/wp-content/uploads/2025/09/Listening-Integrated-Skills.jpg" alt="Pre-HKDSE Listening and Integrated Skills Promo">
+          </a>
+        </div>
+
+        <div class="sidebar-stack">
+          <input type="checkbox" id="expand-login" class="expand-toggle">
+        
+          <label for="expand-login" class="login-label">
+            <span class="normal-text">登入</span>
+        
+            <div class="expand-content">
+              <h2>登入</h2>
+        
+              <div class="form-group">
+                <label for="username">Username/Email</label>
+                <input type="text" id="username" placeholder="">
+              </div>
+        
+              <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="">
+              </div>
+        
+              <div class="remember-row">
+                <div class="remember">
+                  <input type="checkbox" id="remember">
+                  <label for="remember">Remember me</label>
+                </div>
+        
+                <a href="/forgot-password" class="forget-link">忘記密碼?</a>
+              </div>
+        
+              <div class="login-btn-wrapper">
+                <button type="submit" class="login-btn">登入</button>
+              </div>
+        
+              <!-- Retract indicator at very bottom -->
+              <label for="expand-login" class="close-ribbon">
+                <span class="triangle">▲</span>
+              </label>
+            </div>
+          </label>
+        
+          <a href="/eshop" class="eshop-link">eShop</a>
+        </div>
+      </div>
+
+      <!-- Placeholder rows (kept duplicated as requested) -->
+      <div class="bottom-row">
+        <div class="bottom-block"><a href="/classroom-prototype/eResources-primary"><img src="/classroom-prototype/primary.jpg" alt="primary"></a></div>
+        <div class="bottom-block"><a href="/classroom-prototype/eResources-secondary"><img src="/classroom-prototype/secondary.jpg" alt="secondary"></a></div>
+        <div class="bottom-block"><a href="https://classroom.com.hk/seminar/">Seminars & Events</a></div>
+      </div>
+
+      <div class="bottom-row">
+        <div class="bottom-block"><a href="/classroom-prototype/eResources-chinese"><img src="https://karsonowo.github.io/classroom-prototype/chinese.jpg" alt="chinese"></a></div>
+        <div class="bottom-block"><a href="/classroom-prototype/eResources-english"><img src="https://karsonowo.github.io/classroom-prototype/english.jpg" alt="englsih"></a></div>
+        <div class="bottom-block"><a href="/classroom-prototype/eResources-maths"><img src="https://karsonowo.github.io/classroom-prototype/mathematics.jpg" alt="mathematics"></a></div>
+      </div>
+
+      <div class="bottom-row">
+        <div class="bottom-block"><a href="/classroom-prototype/eResources-hkat"><img src="https://karsonowo.github.io/classroom-prototype/hkat.jpg" alt="hkat"></a></div>
+        <div class="bottom-block"><a href="/classroom-prototype/eResources-tsa"><img src="https://karsonowo.github.io/classroom-prototype/tsa.jpg" alt="tsa"></a></div>
+        <div class="bottom-block"><a href="/classroom-prototype/eResources-sspa"><img src="https://karsonowo.github.io/classroom-prototype/sspa.jpg" alt="sspa"></a></div>
+      </div>
+
+      <div class="bottom-row">
+        <div class="bottom-block"><a href="/classroom-prototype/eResources-hkdse"><img src="https://karsonowo.github.io/classroom-prototype/hkdse.jpg" alt="hkdse"></a></div>
+        <div class="bottom-block"><a href="https://classroom.com.hk/idiom-world/"><img src="https://karsonowo.github.io/classroom-prototype/idiom-world.jpg" alt="idiom-world"></a></div>
+        <div class="bottom-block"><a href="/classroom-prototype/eResources-grammar"><img src="https://karsonowo.github.io/classroom-prototype/grammar.jpg" alt="grammar"></a></div>
+      </div>
+
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <img src="https://classroom.com.hk/wp-content/uploads/2026/02/CLASSROOM-R-Guide_white.png" alt="Classroom Guide">
+  </nav>
+
+</body>
+</html>
