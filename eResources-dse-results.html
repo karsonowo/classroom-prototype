@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Results</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		body {
+			font-family: "Noto Sans TC", "PingFang TC", "Microsoft YaHei", Arial, sans-serif;
+			background-color: #f8f9fa;
+			color: #fff;
+			height: 100vh;
+			overflow: hidden;
+		}
+
+		/* Top & Bottom Navs */
+		.top-nav {
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			height: 10vh;
+			background-color: #2B469C;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 0 3rem;
+			z-index: 1000;
+			font-weight: 500;
+		}
+
+		.top-nav .logo {
+			font-size: 1.6rem;
+			font-weight: 700;
+			color: white;
+			text-decoration: none;
+		}
+
+		.top-nav .right {
+			display: flex;
+			align-items: center;
+			gap: 2rem;
+		}
+
+		.dropdown {
+			position: relative;
+		}
+
+		.dropdown-btn {
+			background: none;
+			border: none;
+			color: white;
+			font-size: 1.1rem;
+			cursor: pointer;
+			padding: 0.6rem 1rem;
+		}
+
+		.dropdown-content {
+			display: none;
+			position: absolute;
+			background-color: #003366;
+			min-width: 160px;
+			top: 100%;
+			right: 0;
+		}
+
+		.dropdown-content a {
+			color: white;
+			padding: 0.8rem 1.2rem;
+			text-decoration: none;
+			display: block;
+		}
+
+		.dropdown-content a:hover {
+			background-color: #0055b3;
+		}
+
+		.dropdown:hover .dropdown-content {
+			display: block;
+		}
+
+		.nav-btn {
+			background: white;
+			color: #2B469C;
+			border: none;
+			padding: 0.7rem 1.4rem;
+			font-size: 1.1rem;
+			font-weight: 600;
+			cursor: pointer;
+			border-radius: 4px;
+		}
+
+		.bottom-nav {
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			height: 10vh;
+			background-color: #2B469C;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			z-index: 1000;
+		}
+
+		.bottom-nav img {
+			height: 65px;
+			width: auto;
+		}
+
+		/* Main Content */
+		.main-wrapper {
+			height: 80vh;
+			margin-top: 10vh;
+			padding: 1.5rem 0;
+			overflow-y: auto;
+
+			margin-bottom: 15vh;
+		}
+
+		.content-container {
+			width: 80%;
+			max-width: 1440px;
+			margin: 0 auto;
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+			gap: 2rem;
+		}
+
+		h1 {
+			font-size: 36px;
+			color: #2B469C;
+			text-align: center;
+		}
+
+		p {
+			font-size: 24px;
+			color: #2B469C;
+			text-align: center;
+		}
+
+		.main-passage {
+			display: grid;
+			grid-template-areas: "passage question";
+			grid-template-columns: 1fr 1fr;
+			gap: 1rem;
+		}
+
+		.main-passage>div {
+			padding: 1rem;
+			color: #2B469C;
+			border: 2px solid #2B469C;
+			border-radius: 1rem;
+		}
+
+		.main-passage .passage {
+			grid-area: passage;
+			scrollbar-color: gray transparent;
+		}
+
+		.line {
+			display: flex;
+			flex-direction: row;
+			width: 97%;
+		}
+
+		.line .line-content {
+			flex: 1;
+		}
+
+		.line .line-number {
+			flex: 1;
+			width: 3ch;
+			color: #888;
+		}
+
+		.main-passage .passage .passage-content {
+			overflow-y: scroll;
+			max-height: 55vh;
+			scrollbar-color: gray transparent;
+		}
+
+		.main-passage .passage .line-number {
+			flex: 1;
+		}
+
+		.main-passage .passage h4 {
+			font-weight: 500;
+			text-align: center;
+			font-size: 110%;
+		}
+
+		.main-passage .passage img {
+			align-self: center;
+			width: 50%;
+			padding-top: 1rem;
+		}
+
+		.main-passage .question {
+			grid-area: question;
+			overflow-y: scroll;
+			scrollbar-color: gray transparent;
+			max-height: 60vh;
+		}
+
+		.question table {
+			margin: .5rem 0;
+			width: 100%;
+		}
+
+		.question table.row-only-border td {
+			border: none;
+		}
+
+		.question table td.noun {
+			text-align: left;
+			padding: 0.6em 1em;
+			padding-left: 4.8ch;
+			/* ≈ space for "(adj.) " or "(n.) " */
+			text-indent: -4.8ch;
+			/* negative indent pulls first line back */
+			hanging-punctuation: first;
+			/* optional – modern browsers only */
+		}
+
+		/* Optional: make sure long words don't break layout */
+		.question table td.noun {
+			hyphens: auto;
+			overflow-wrap: break-word;
+		}
+
+		.question table,
+		.question th,
+		.question td {
+			border: 2px solid #2B469C;
+			border-collapse: collapse;
+			font-weight: 400;
+		}
+
+		.question table tbody tr th * {
+			margin: 0 2px;
+		}
+
+		.question .clickable-word {
+			cursor: pointer;
+			border-radius: 3px;
+			transition: background-color 0.15s, color 0.15s;
+			padding: 2px 0;
+		}
+
+		.question .clickable-word.selected {
+			color: #dd8500;
+		}
+
+		.question .clickable-word:not(.selected):hover {
+			background-color: rgba(0, 80, 160, 0.05);
+			color: #204673;
+		}
+
+		.passage-content .paragraph-number {
+			color: #808BAF;
+			padding-right: 1rem;
+		}
+
+		.question input[type="text"] {
+			background: none;
+			width: 96%;
+			border-radius: 1rem;
+			border: 2px solid #2B469C;
+			padding: .5rem;
+			margin: 1rem 2%;
+			font-size: .9em;
+		}
+
+		.question input[type="submit"] {
+			border-radius: 1rem;
+			border: 2px solid #2B469C;
+			padding: .5rem;
+			margin: 1rem 0;
+			cursor: pointer;
+		}
+
+		.mc-option {
+			display: flex;
+			align-items: flex-start;
+			margin: 0.9rem 0;
+			gap: 0.8rem;
+			cursor: pointer;
+			border-radius: 6px;
+			transition: background 0.15s;
+			justify-content: center;
+		}
+
+		.mc-option input[type="radio"] {
+			flex-shrink: 0;
+			margin-top: 0.3rem;
+			accent-color: #2B469C;
+		}
+
+		.mc-option span {
+			flex: 1;
+		}
+
+		.timeline-container input[type="text"] {
+			max-width: 80px;
+			margin: 0 auto;
+			font-weight: bold;
+			text-transform: uppercase;
+		}
+
+		.timeline-container input[type="text"]::placeholder {
+			color: #aaa;
+			font-weight: normal;
+			text-transform: none;
+		}
+
+		/* Vocabulary hover popup - only one at a time + bridge */
+		.vocab {
+			color: #dd8500;
+			cursor: help;
+			position: relative;
+			display: inline-block;
+			/* important for bridge */
+			text-decoration: underline dotted #dd8500 2px;
+			transition: color 0.15s ease;
+		}
+
+		.vocab:hover {
+			color: #dd8500;
+		}
+
+		/* Invisible bridge so tooltip never disappears when moving down */
+		.vocab::before {
+			content: "";
+			position: absolute;
+			inset: -20px -4px 0 -4px;
+			/* covers the gap + extra safety */
+			z-index: 1;
+			pointer-events: auto;
+			background: transparent;
+		}
+
+		/* The tooltip container */
+		.vocab .vocab-tooltip {
+			position: absolute;
+			bottom: 110%;
+			left: 50%;
+			transform: translateX(-50%);
+			margin-bottom: 6px;
+
+			padding: 12px 16px;
+			min-width: 240px;
+			max-width: 540px;
+
+			background-color: #2B469C;
+			color: white;
+			font-size: 0.95rem;
+			line-height: 1.45;
+			border-radius: 8px;
+			box-shadow: 0 5px 15px rgba(0, 0, 0, 0.28);
+
+			opacity: 0;
+			visibility: hidden;
+			pointer-events: none;
+
+			transition:
+				opacity 0.18s ease,
+				transform 0.18s ease,
+				visibility 0s linear 0.18s;
+		}
+
+		/* Show tooltip ONLY when .active class is added by JS */
+		.vocab.active .vocab-tooltip {
+			opacity: 1;
+			visibility: visible;
+			transform: translateX(-50%) translateY(-4px);
+			pointer-events: auto;
+		}
+
+		/* Small triangle arrow */
+		.vocab .vocab-tooltip::before {
+			content: "";
+			position: absolute;
+			top: 100%;
+			left: 50%;
+			transform: translateX(-50%);
+			border: 8px solid transparent;
+			border-top-color: #2B469C;
+		}
+
+		/* Inside tooltip layout (your existing classes) */
+		.vocab-tooltip .vocab-grid {
+			display: flex;
+			flex-direction: row;
+		}
+
+		.vocab-tooltip p {
+			font-size: 1rem;
+			color: #ffd700;
+			font-weight: 500;
+			white-space: nowrap;
+		}
+
+		.vocab-tooltip .meaning {
+			font-weight: 400;
+			margin-bottom: 0.35em;
+		}
+
+		.vocab-tooltip .pos {
+			font-style: italic;
+			color: #e0e8ff;
+			margin: 0 0.5em 0.5em 0.5em;
+		}
+
+		.vocab-tooltip .audio-placeholder {
+			color: #ffd700;
+			font-weight: 500;
+		}
+		
+        .dropdown:hover .dropdown-content {
+            display: block;
+        }
+        .bottom-nav img {
+            height: 65px;
+            width: auto;
+        }
+		
+		/* Result feedback styles */
+        .tick { color: #28a745; font-size: 1.6rem; font-weight: bold; }
+        .cross { color: #dc3545; font-size: 1.6rem; font-weight: bold; }
+
+        .correct-text { color: #28a745; font-weight: 600; }
+        .wrong-text   { color: #dc3545; font-weight: 600; }
+
+        .result-row { background: #f0fff0; } /* light green bg for correct */
+        .wrong-row  { background: #fff5f5; } /* light red bg for wrong */
+
+        .correctness-cell {
+            text-align: center;
+            vertical-align: middle;
+            font-size: 1.8rem;
+            width: 60px;
+        }
+
+        .back-btn {
+            background: #2B469C;
+            color: white;
+            border: none;
+            padding: 0.9rem 2rem;
+            font-size: 1.15rem;
+            border-radius: 6px;
+            cursor: pointer;
+            margin: 2.5rem auto;
+            display: block;
+        }
+        .back-btn:hover { background: #1e357a; }
+    </style>
+</head>
+<body>
+    <audio id="vocab-audio" preload="auto"></audio>
+	<nav class="top-nav">
+		<a class="logo" href="https://karsonowo.github.io/classroom-prototype/eResources.html">課室教材資源庫</a>
+		<div class="right">
+			<div class="dropdown"><button class="dropdown-btn">程度 ▼</button>
+				<div class="dropdown-content"><a href="/primary">小學</a><a href="/secondary">中學</a></div>
+			</div>
+			<div class="dropdown"><button class="dropdown-btn">科目 ▼</button>
+				<div class="dropdown-content"><a href="/chinese">中文</a><a href="/english">英文</a><a
+						href="/mathematics">數學</a></div>
+			</div>
+			<div class="dropdown"><button class="dropdown-btn">應試 ▼</button>
+				<div class="dropdown-content"><a href="/hkat">HKAT</a><a href="/tsa">TSA</a><a href="/sspa">SSPA</a><a
+						href="/hkdse">HKDSE</a></div>
+			</div>
+			<div class="dropdown"><button class="dropdown-btn">主題 ▼</button>
+				<div class="dropdown-content"><a href="/idiom">成語天地</a><a href="/grammar">語法世界</a></div>
+			</div>
+			<button class="nav-btn">Login</button>
+		</div>
+	</nav>
+    <div class="main-wrapper">
+        <div class="content-container">
+<h1>Classroom DSE Galaxy</h1>
+			<div class="main-passage">
+				<div class="passage">
+					<div class="passage-content">
+						<h4>Speech by Michael Hui</h4>
+						<h4>Winner of Lifetime achievement Award, Golden Globes 2023</h4>
+						<div style="display: flex; justify-content: center"><img
+								src="https://karsonowo.github.io/classroom-prototype/dse_photo.png"></img></div>
+						<br>
+						<div class="line">
+							<div class="line-number">
+								1<br><br><br><br>5<br><br><br><br><br>10<br><br><br><br><br>15　<br><br><br><br><br>20
+							</div>
+							<div class="line-passage">
+								<span class="paragraph-number">[1]</span>Some say life is a journey and it's about
+								growing and changing and coming to terms with who and what you are. This is so true to
+								me. I had been playing drama for eight years before I became a stage director. I had
+								been directing plays for five years before I was invited to direct a film. I had
+								rejected the
+								<span class="vocab"
+									data-audio="https://karsonowo.github.io/classroom-prototype/01_invitation.mp3">invitation
+									<span class="vocab-tooltip">
+										<div class="vocab-grid">
+											<p>invitation</p>
+											<div class="pos">(n.)</div>
+											<div class="audio-placeholder">🔊</div>
+										</div>
+										<div class="meaning">A fan-shaped structure or formation, often used
+											metaphorically for something spreading out like a fan</div>
+									</span>
+								</span>
+								several times before I directed my first film and won the Hong Kong Film Awards for Best
+								New Director in the 1980s. Theatre production and film production are entirely
+								different. I had never started working at 5am until I directed the first film. I can
+								still recall
+								<span class="vocab"
+									data-audio="https://karsonowo.github.io/classroom-prototype/02_overcoming.mp3">overcoming
+									<span class="vocab-tooltip">
+										<div class="vocab-grid">
+											<p>overcome</p>
+											<div class="pos">(v.)</div>
+											<div class="audio-placeholder">🔊</div>
+										</div>
+										<div class="meaning">If you overcome something, you deal with a problem, fear,
+											or difficulty and don't let it stop you.</div>
+									</span>
+								</span>
+								my
+								<span class="vocab"
+									data-audio="https://karsonowo.github.io/classroom-prototype/03_anxiety.mp3">anxiety
+									<span class="vocab-tooltip">
+										<div class="vocab-grid">
+											<p>anxiety</p>
+											<div class="pos">(n.)</div>
+											<div class="audio-placeholder">🔊</div>
+										</div>
+										<div class="meaning">If you feel anxiety, you feel very worried or nervous about
+											something that might happen.</div>
+									</span>
+								</span>
+								and
+								<span class="vocab"
+									data-audio="https://karsonowo.github.io/classroom-prototype/04_pull_oneself_together.mp3">pull
+									oneself together
+									<span class="vocab-tooltip">
+										<div class="vocab-grid">
+											<p>pull oneself together</p>
+											<div class="pos">(phrase)</div>
+											<div class="audio-placeholder">🔊</div>
+										</div>
+										<div class="meaning">If you pull yourself together, you stop feeling upset and
+											try to stay calm and focused again.</div>
+									</span>
+								</span>
+								to give clear directions to the crew.
+								<br>
+								<span class="paragraph-number">[2]</span>That year, I was awarded the best new director.
+								The award meant a lot to me, and had a great
+								<span class="vocab"
+									data-audio="https://karsonowo.github.io/classroom-prototype/05_impact.mp3">impact
+									<span class="vocab-tooltip">
+										<div class="vocab-grid">
+											<p>impact</p>
+											<div class="pos">(n.)</div>
+											<div class="audio-placeholder">🔊</div>
+										</div>
+										<div class="meaning">If something has an impact, it means it changes or affects
+											something in a strong way.</div>
+									</span>
+								</span>
+								on me. It was not to
+								<span class="vocab"
+									data-audio="https://karsonowo.github.io/classroom-prototype/06_acknowledge.mp3">acknowledge
+									<span class="vocab-tooltip">
+										<div class="vocab-grid">
+											<p>acknowledge</p>
+											<div class="pos">(v.)</div>
+											<div class="audio-placeholder">🔊</div>
+										</div>
+										<div class="meaning">If you acknowledge something, you accept that it is true or
+											show that you notice it.</div>
+									</span>
+								</span>
+								how well I did in the past, but to show that more was expected from me in the coming
+								years. Since then, I was better known for being an award-winning film director than a
+								stage actor and director.
+								<br>
+								<span class="paragraph-number">[3]</span>I have been shooting
+								<span class="vocab"
+									data-audio="https://karsonowo.github.io/classroom-prototype/07_numerous.mp3">numerous
+									<span class="vocab-tooltip">
+										<div class="vocab-grid">
+											<p>numerous</p>
+											<div class="pos">(adj.)</div>
+											<div class="audio-placeholder">🔊</div>
+										</div>
+										<div class="meaning">If something is numerous, there are many of it; it means a
+											large number.</div>
+									</span>
+								</span>
+								films for over 40 years. I am at the presentation ceremony today to receive this
+								honorary award. I thank my family for this achievement. At this is a
+								<span class="vocab"
+									data-audio="https://karsonowo.github.io/classroom-prototype/08_monumental.mp3">monumental
+									<span class="vocab-tooltip">
+										<div class="vocab-grid">
+											<p>monumental</p>
+											<div class="pos">(adj.)</div>
+											<div class="audio-placeholder">🔊</div>
+										</div>
+										<div class="meaning">If something is monumental, it is extremely large,
+											important, or very impressive.</div>
+									</span>
+								</span>
+								moment, I'm so
+								<span class="vocab"
+									data-audio="https://karsonowo.github.io/classroom-prototype/09_appreciative.mp3">appreciative
+									<span class="vocab-tooltip">
+										<div class="vocab-grid">
+											<p>appreciative </p>
+											<div class="pos">(adj.)</div>
+											<div class="audio-placeholder">🔊</div>
+										</div>
+										<div class="meaning">If someone is appreciative, they feel thankful and show
+											that they are pleased with what someone has done.</div>
+									</span>
+								</span>
+								to people who have had a hand in getting me here to the award. My crew and my cast, you
+								are my equals, you are my betters. I could have never been here without you.
+								<br>
+								<span class="paragraph-number">[4]</span>To all my fellows, I do not feel
+								<span class="vocab"
+									data-audio="https://karsonowo.github.io/classroom-prototype/10_elevated.mp3">elevated
+									<span class="vocab-tooltip">
+										<div class="vocab-grid">
+											<p>elevated</p>
+											<div class="pos">(adj.)</div>
+											<div class="audio-placeholder">🔊</div>
+										</div>
+										<div class="meaning">If something is elevated, it is higher than the ground or
+											greater in level, position, or importance.</div>
+									</span>
+								</span>
+								above any of you. I have had the pleasure to work with you all over the last 50 years.
+							</div>
+						</div>
+					</div>
+				</div>
+
+            <!-- Right: Questions with marking -->
+				<div class="question" id="resultsContainer"></div>
+			</div>
+        </div>
+    </div>
+
+    <!-- Bottom nav ── identical ── -->
+    <nav class="bottom-nav">
+        <img src="https://classroom.com.hk/wp-content/uploads/2026/02/CLASSROOM-R-Guide_white.png" alt="Classroom Guide">
+    </nav>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+		// ────────────────────────────────────────────────
+		// Vocabulary tooltip + audio playback
+		// ────────────────────────────────────────────────
+		const vocabs = document.querySelectorAll('.vocab');
+		const audioPlayer = document.getElementById('vocab-audio');
+		let activeVocab = null;
+
+		if (!audioPlayer) {
+			console.warn('Audio element #vocab-audio not found.');
+		}
+
+		vocabs.forEach(vocab => {
+			// Hover → show tooltip
+			vocab.addEventListener('mouseenter', () => {
+				if (activeVocab && activeVocab !== vocab) return;
+				if (!activeVocab) {
+					vocab.classList.add('active');
+					activeVocab = vocab;
+				}
+			});
+
+			// Leave → hide tooltip (small delay)
+			const closeHandler = () => {
+				setTimeout(() => {
+					if (activeVocab === vocab && !vocab.matches(':hover')) {
+						vocab.classList.remove('active');
+						activeVocab = null;
+					}
+				}, 180);
+			};
+			vocab.addEventListener('mouseleave', closeHandler);
+
+			// Click → play audio + toggle tooltip
+			vocab.addEventListener('click', (e) => {
+				e.stopPropagation();
+
+				const audioSrc = vocab.dataset.audio;
+				if (audioSrc && audioPlayer) {
+					audioPlayer.pause();
+					audioPlayer.currentTime = 0;
+					audioPlayer.src = audioSrc;
+
+					audioPlayer.play().catch(err => {
+						console.warn('Audio play failed:', err.message);
+					});
+				} else if (!audioSrc) {
+					console.warn('Missing data-audio on vocab:', vocab.textContent.trim());
+				}
+
+				// Toggle tooltip
+				if (activeVocab !== vocab) {
+					vocabs.forEach(v => v.classList.remove('active'));
+					vocab.classList.add('active');
+					activeVocab = vocab;
+				} else {
+					vocab.classList.remove('active');
+					activeVocab = null;
+				}
+			});
+		});
+
+		// Click outside → close all tooltips
+		document.addEventListener('click', (e) => {
+			if (!e.target.closest('.vocab')) {
+				vocabs.forEach(v => v.classList.remove('active'));
+				activeVocab = null;
+			}
+		});
+
+		// ────────────────────────────────────────────────
+		// Clickable wrong-word selector (your existing feature)
+		// ────────────────────────────────────────────────
+		const allClickableWords = document.querySelectorAll('.clickable-word');
+		allClickableWords.forEach(word => {
+			word.addEventListener('click', () => {
+				word.classList.toggle('selected');
+			});
+		});
+
+	
+        const params = new URLSearchParams(window.location.search);
+        const container = document.getElementById('resultsContainer');
+		console.log(window.location.search);
+		/*
+		const receivedData = {};
+		params.forEach((value, key) => {
+			receivedData[key] = value;
+		});
+		console.log(receivedData);
+		*/
+
+        const correctAnswers = {
+            q1: "coming with the terms",
+            q2a: "the reward",
+            q2b: "another reward",
+            q3aa: [8],
+            q3ba: [1],
+            q3ca: [5],
+            q3da: [1],
+            q3ab: "reward",
+            q3bb: "honorable",
+            q3cb: "this",
+            q3db: "that",
+            q4a: "this",
+            q4b: "those",
+            q4c: "that",
+            q4d: "those",
+            q5: "C",
+            q6: {
+				a: "B",
+				b: "F",
+				c: "A",
+				d: "D",
+				e: "E"
+			}
+        };
+
+        // ────────────────────────────────────────────────
+        // Generate result version of each question
+        // ────────────────────────────────────────────────
+        let html = '';
+
+        // Q1
+        const q1User = params.get('q1') || '(未作答)';
+        const q1Correct = correctAnswers.q1;
+        const q1Right = q1User.trim().toLowerCase() === q1Correct.toLowerCase();
+        html += `
+				<h2 style="text-align: center;">Answer Checking</h2>
+                <span style="display: flex; justify-content:space-between">
+                    <span style="flex:6">
+                        1. Find a phrase in paragraph 1 that means 'accepting a new situation and learning to deal with it'.
+                    </span>
+                    <span style="flex:1; text-align: right; color: #666;">(5 marks)</span>
+					<span style="flex: 0 0 60px;text-align: center; font-size: 1.8rem; line-height: 1.2;">
+                        ${q1Right ? '<span class="tick">✔</span>' : '<span class="cross">✘</span>'}
+					</span>
+                </span>
+                <div>Your Answer: <strong class="${q1Right ? 'correct-text' : 'wrong-text'}">${q1User}</strong></div>
+                ${!q1Right ? `<div>Correct Answer: <strong class="correct-text">${q1Correct}</strong></div>` : ''}
+
+        `;
+
+        // Q2 – table style
+        html += `
+				<br>
+				<span style="display: flex; justify-content:space-between">
+					<span style="flex:6">
+						2. Look at the following pronouns and answer who or what they refer to in the speech.
+					</span>
+					<span style="flex:1; text-align: right; color: #666;">(5 marks)</span>
+				</span>
+				<table>
+					<tr>
+						<th>Pronoun</th>
+						<th>Line</th>
+						<th>Your Answer</th>
+						<th>Correct Answer</th>
+						<th class="correctness-cell">✔?</th>
+					</tr>
+        `;
+
+        ['q2a', 'q2b'].forEach((k, i) => {
+            const user = params.get(k) || '(未作答)';
+            const corr = correctAnswers[k];
+            const right = user.trim().toLowerCase() === corr.toLowerCase();
+            html += `
+                <tr ${right ? 'class="result-row"' : 'class="wrong-row"'}>
+                    <th>${i===0 ? 'it' : 'here'}</th>
+                    <th>line ${i===0 ? '9' : '15'}</th>
+                    <th style="max-width: 8vw; overflow: clip;"><strong class="${right ? 'correct-text' : 'wrong-text'}">${user}</strong></th>
+                    <th style="max-width: 8vw; overflow: clip;"><strong class="correct-text">${corr}</strong></th>
+                    <td class="correctness-cell">${right ? '<span class="tick">✔</span>' : '<span class="cross">✘</span>'}</td>
+                </tr>
+            `;
+        });
+		// ────────────────────────────────────────────────
+		// Q3 – Clickable words + fill-in-the-blank (complete version)
+		// ────────────────────────────────────────────────
+		const q3Rows = [
+			{ id: 'a', posKey: 'q3aa', wordKey: 'q3ab', posCorrect: [8], wordCorrect: 'experienced',
+			  sentence: 'This is a speech given by an inexperienced' },
+			{ id: 'b', posKey: 'q3ba', wordKey: 'q3bb', posCorrect: [1], wordCorrect: 'director',
+			  sentence: 'actor who was awarded the honorary award' },
+			{ id: 'c', posKey: 'q3ca', wordKey: 'q3cb', posCorrect: [5], wordCorrect: 'directing',
+			  sentence: 'for his contribution to acting for' },
+			{ id: 'd', posKey: 'q3da', wordKey: 'q3db', posCorrect: [1], wordCorrect: 'more',
+			  sentence: 'less than 40 years in the industry' }
+		];
+		html += `
+			</table>
+				<br>
+				<span style="display: flex; justify-content:space-between">
+					<span style="flex:6">
+						3. Click on the wrong word(s) and write down in the blanks what words should replace them. Write NO MORE THAN TWO words for each answer.
+					</span>
+					<span style="flex:1; text-align: right; color: #888;">(5 marks)</span>
+				</span>
+
+				<table class="clickable" style="width:100%; margin-top:1rem; border-collapse: collapse;">
+					
+		`;
+
+		q3Rows.forEach(r => {
+			const posUserRaw = params.get(r.posKey) || '[]';
+			const wordUser = params.get(r.wordKey) || '(未填)';
+
+			let posUserArr = [];
+			try { posUserArr = JSON.parse(posUserRaw); } catch (e) { posUserArr = []; }
+
+			const posRight = JSON.stringify(posUserArr.sort()) === JSON.stringify(r.posCorrect.sort());
+			const wordRight = wordUser.trim().toLowerCase() === r.wordCorrect.toLowerCase();
+			const rowRight = posRight && wordRight;  // strict AND gate
+
+			// ── Build highlighted sentence ──
+		let highlighted = r.sentence.trim();  // remove any accidental leading/trailing junk
+
+		// Helper: safely highlight a word at a specific 1-based position
+		const highlightWord = (text, pos, style) => {
+			const words = text.split(/\s+/);
+			if (pos < 1 || pos > words.length) return text;
+			
+			let targetWord = words[pos - 1];
+			
+			// Clean up targetWord: remove any accidental style-like garbage
+			targetWord = targetWord.replace(/padding:|border-radius:|font-weight:|;|"/g, '').trim();
+			
+			if (!targetWord) return text;
+			
+			// Escape for regex
+			const escaped = targetWord.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&');
+			const regex = new RegExp(`\\b${escaped}\\b`);
+			
+			return text.replace(regex,
+				`<span style="${style}">${targetWord}</span>`
+			);
+		};
+
+		// 1. Always highlight the CORRECT position(s) in green
+		r.posCorrect.forEach(pos => {
+			highlighted = highlightWord(highlighted, pos,
+				'background:#eaffea; color:#28a745; padding:2px 5px; border-radius:4px; font-weight:600;'
+			);
+		});
+
+		// 2. If user was wrong → highlight what THEY clicked in red
+		if (!posRight && posUserArr.length > 0) {
+			posUserArr.forEach(pos => {
+				highlighted = highlightWord(highlighted, pos,
+					'background:#fff5f5; color:#dc3545; padding:2px 5px; border-radius:4px; font-weight:600; text-decoration:underline wavy;'
+				);
+			});
+			// NO "You selected position(s): ..." anymore
+		}
+
+		// NO "Perfect — you found the error!" either
+
+		html += `
+			<tr ${rowRight ? 'style="background:#f0fff0;"' : 'style="background:#fff5f5;"'}>
+				<td style="padding:0.8rem; border:1px solid #ddd; line-height:1.7; font-size:1.05rem;">
+					${highlighted}
+				</td>
+				<td style="padding:0.8rem; border:1px solid #ddd; vertical-align: top;">
+					<div>Your correction: <strong style="color:${wordRight ? '#28a745' : '#dc3545'}">${wordUser || '(未填)'}</strong></div>
+					${!wordRight ? `
+						<div style="margin-top:0.5rem;">
+							Correct word: <strong style="color:#28a745;">${r.wordCorrect}</strong>
+						</div>
+					` : ''}
+				</td>
+				<td style="padding:0.8rem; border:1px solid #ddd; text-align:center; font-size:2.2rem; vertical-align:middle;">
+					${rowRight ? '<span class="tick">✔</span>' : '<span class="cross">✘</span>'}
+				</td>
+			</tr>
+		`;
+			});
+
+			html += '</table>';
+			
+			// Q4
+			const q4aUser = params.get('q4a') || '(未作答)';
+			const q4aRight = q4aUser.trim().toLowerCase() === correctAnswers.q4a.toLowerCase();
+
+			const q4bUser = params.get('q4b') || '(未作答)';
+			const q4bRight = q4bUser.trim().toLowerCase() === correctAnswers.q4b.toLowerCase();
+
+			const q4cUser = params.get('q4c') || '(未作答)';
+			const q4cRight = q4cUser.trim().toLowerCase() === correctAnswers.q4c.toLowerCase();
+
+			const q4dUser = params.get('q4d') || '(未作答)';
+			const q4dRight = q4dUser.trim().toLowerCase() === correctAnswers.q4d.toLowerCase();
+
+			const q4AllRight = q4aRight && q4bRight && q4cRight && q4dRight;
+			html += `
+				<br>
+				<span style="display: flex; justify-content:space-between">
+					<span style="flex:6">
+						4. Find words or phrases in paragraphs 3-4 to match the following definitions below.
+					</span>
+					<span style="flex:1; text-align: right; color: #666;">(5 marks)</span>
+				</span>
+
+				<table style="width:100%; border-collapse: collapse; margin-top:0.8rem;">
+					<tr>
+						<th style="width:10%; text-align:center;">(i)</th>
+						<th style="width:40%; padding:0.6rem; text-align: left">
+							<div>Your Answer: <strong style="color: ${q4aRight ? '#28a745' : '#dc3545'}">${q4aUser}</strong></div>
+							${!q4aRight ? `<div style="margin-top:0.4rem;">Correct Answer: <strong style="color:#28a745;">${correctAnswers.q4a}</strong></div>` : ''}
+						</th>
+						<th style="width:50%; padding-left:1rem; text-align: left">(adj.) very important and having a great influence</th>
+					</tr>
+
+					<tr>
+						<th style="width:10%; text-align:center;">(ii)</th>
+						<th style="width:40%; padding:0.6rem; text-align: left">
+							<div>Your Answer: <strong style="color: ${q4bRight ? '#28a745' : '#dc3545'}">${q4bUser}</strong></div>
+							${!q4bRight ? `<div style="margin-top:0.4rem;">Correct Answer: <strong style="color:#28a745;">${correctAnswers.q4b}</strong></div>` : ''}
+						</th>
+						<th style="width:50%; padding-left:1rem; text-align: left">(adj.) very important and having a great influence</th>
+					</tr>
+
+					<tr>
+						<th style="width:10%; text-align:center;">(iii)</th>
+						<th style="width:40%; padding:0.6rem; text-align: left">
+							<div>Your Answer: <strong style="color: ${q4cRight ? '#28a745' : '#dc3545'}">${q4cUser}</strong></div>
+							${!q4cRight ? `<div style="margin-top:0.4rem;">Correct Answer: <strong style="color:#28a745;">${correctAnswers.q4c}</strong></div>` : ''}
+						</th>
+						<th style="width:50%; padding-left:1rem; text-align: left">(adj.) very important and having a great influence</th>
+					</tr>
+
+					<tr>
+						
+						<th style="width:10%; text-align:center;">(iv)</th>
+						<th style="width:40%; padding:0.6rem; text-align: left">
+							<div>Your Answer: <strong style="color: ${q4dRight ? '#28a745' : '#dc3545'}">${q4dUser}</strong></div>
+							${!q4dRight ? `<div style="margin-top:0.4rem;">Correct Answer: <strong style="color:#28a745;">${correctAnswers.q4d}</strong></div>` : ''}
+						</th>
+						<th style="width:50%; padding-left:1rem; text-align: left">(adj.) very important and having a great influence</th>
+					</tr>
+				</table>
+		`;
+		// Q5
+		const q5User = params.get('q5') || '(未選)';
+		const q5Right = q5User === correctAnswers.q5;
+		html += `
+			<br>
+			<span style="display: flex; justify-content:space-between; align-items: flex-start;">
+				<span style="flex:6">
+					5. According to paragraphs 1-2, which of the following is NOT true?
+				</span>
+				<span style="flex:1; text-align: right; color: #666;">(5 marks)</span>
+				<span style="flex:0 0 60px; text-align: center; font-size: 1.8rem; line-height: 1.2;">
+					${q5Right ? '<span class="tick">✔</span>' : '<span class="cross">✘</span>'}
+				</span>
+			</span>
+
+			<div style="padding: 1rem 0 1rem 2.5rem;">
+				<label style="display:block; margin:0.7rem 0; ${q5User === 'A' ? (q5Right ? 'color:#28a745; font-weight:600;' : 'color:#dc3545; font-weight:600;') : ''}">
+					A. Changes in career path have enabled the director to understand more about himself.
+				</label>
+				<label style="display:block; margin:0.7rem 0; ${q5User === 'B' ? (q5Right ? 'color:#28a745; font-weight:600;' : 'color:#dc3545; font-weight:600;') : ''}">
+					B. Theatre production and film production are basically the same form of art.
+				</label>
+				<label style="display:block; margin:0.7rem 0; ${q5User === 'C' ? (q5Right ? 'color:#28a745; font-weight:600;' : 'color:#dc3545; font-weight:600;') : ''}">
+					C. Early call time is very common in the filmmaking industry.
+				</label>
+				<label style="display:block; margin:0.7rem 0; ${q5User === 'D' ? (q5Right ? 'color:#28a745; font-weight:600;' : 'color:#dc3545; font-weight:600;') : ''}">
+					D. People tend to raise their expectation for an award-winning director.
+				</label>
+
+				${!q5Right ? `
+					<div style="margin-top:1.5rem; padding:0.8rem; background:#f0fff0; border:1px solid #28a745; border-radius:6px;">
+						Correct choice: <strong style="color:#28a745;">${correctAnswers.q5}</strong>
+					</div>
+				` : ''}
+			</div>
+		`;
+		// Q6
+		const q6Keys = ['q6a', 'q6b', 'q6c', 'q6d', 'q6e'];
+		const q6UserAnswers = q6Keys.map(key => params.get(key)?.toUpperCase() || '');
+		const q6CorrectValues = Object.values(correctAnswers.q6);
+
+		const q6AllRight = q6UserAnswers.every((val, i) => val === q6CorrectValues[i]) &&
+						   q6UserAnswers.every(val => val !== ''); // also check not empty
+		
+		html += `
+			<br>
+			<span style="display: flex; justify-content:space-between; align-items: flex-start; margin-top: 2rem;">
+				<span style="flex:6">
+					6. The following timeline shows the major events in the director's career. Complete it by filling in the appropriate letters (A–F) from the box below.
+				</span>
+				<span style="flex:1; text-align: right; color: #666;">(5 marks)</span>
+				<span style="flex:0 0 60px; text-align: center; font-size: 1.8rem; line-height: 1.2;">
+					${q6AllRight ? '<span class="tick">✔</span>' : '<span class="cross">✘</span>'}
+				</span>
+			</span>
+
+			<div style="padding: 1rem 0 1rem 2.5rem;">
+
+				<!-- User's answers row -->
+				<div style="display: flex; justify-content: space-between; max-width: 1000px; margin: 1.5rem auto 0.5rem; gap: 10px;">
+					${['a','b','c','d','e'].map(key => {
+						const userVal = params.get(`q6${key}`)?.toUpperCase() || '';
+						const isCorrect = userVal === correctAnswers.q6[key];
+						const bgColor = q6AllRight ? '#eaffea' : '#fff5f5';
+						const borderColor = q6AllRight ? '#28a745' : '#dc3545';
+						const textColor = q6AllRight ? '#28a745' : '#dc3545';
+
+						return `
+							<input type="text" 
+								   value="${userVal}" 
+								   disabled 
+								   style="width: 60px; text-align: center; font-weight: bold; text-transform: uppercase; 
+										  background: ${bgColor}; border: 2px solid ${borderColor}; color: ${textColor}; 
+										  padding: 8px; border-radius: 6px; font-size: 1.2rem;" />
+						`;
+					}).join('')}
+				</div>
+
+				<!-- Correct answers row (only shown if any is wrong) -->
+				${!q6AllRight ? `
+					<div style="display: flex; justify-content: space-between; max-width: 1000px; margin: 1.5rem auto 0.5rem; gap: 10px; opacity: 0.85;">
+						${['a','b','c','d','e'].map(key => `
+							<div style="width: 60px; text-align: center; font-weight: bold; text-transform: uppercase; 
+										background: #eaffea; border: 2px solid #28a745; color: #28a745; 
+										padding: 8px; border-radius: 6px; font-size: 1.2rem;">
+								${correctAnswers.q6[key]}
+							</div>
+						`).join('')}
+					</div>
+					<div style="text-align: center; color: #28a745; font-size: 0.95rem; margin-top: 0.5rem;">
+					</div>` : ``}
+				<div style="font-style:consolas; text-align: center; margin: 1.2rem 0; font-size: 2.2rem; color: #2B469C; letter-spacing: -2px; line-height: 1;">
+					==================================⇒
+				</div>
+
+				<!-- Year labels -->
+				<div style="display: flex; justify-content: space-between; max-width: 1000px; margin: 0 auto; font-weight: bold; color: #2B469C; font-size: 1.1rem;">
+					<div style="flex: 1; text-align: center;">1960s</div>
+					<div style="flex: 1; text-align: center;"></div>
+					<div style="flex: 1; text-align: center;"></div>
+					<div style="flex: 1; text-align: center;"></div>
+					<div style="flex: 1; text-align: center;">Present</div>
+				</div>
+				<br>
+				<!-- Options table -->
+				<table style="width: 100%; max-width: 1000px; border-collapse: collapse; font-size: 1.1rem;">
+					<tr>
+						<td style="width: 50%; padding: 0.6rem; border: 1px solid #ccc; background: #f8f9fa;">
+							<strong>A.</strong> playing dramas
+						</td>
+						<td style="width: 50%; padding: 0.6rem; border: 1px solid #ccc; background: #f8f9fa;">
+							<strong>B.</strong> awarded the honorary award
+						</td>
+					</tr>
+					<tr>
+						<td style="padding: 0.6rem; border: 1px solid #ccc;">
+							<strong>C.</strong> awarded the best new director
+						</td>
+						<td style="padding: 0.6rem; border: 1px solid #ccc;">
+							<strong>D.</strong> directing stage plays
+						</td>
+					</tr>
+					<tr>
+						<td style="padding: 0.6rem; border: 1px solid #ccc; background: #f8f9fa;">
+							<strong>E.</strong> rejecting filmmaking invitations
+						</td>
+						<td style="padding: 0.6rem; border: 1px solid #ccc; background: #f8f9fa;">
+							<strong>F.</strong> directing the first film
+						</td>
+					</tr>
+				</table>
+			</div>
+		`;
+		html += '<button class="back-btn" onclick="history.back()">返回修改答案</button>';
+        container.innerHTML = html || '<p style="text-align:center; color:#777;">沒有收到答案資料。</p>';
+    });
+    </script>
+</body>
+</html>

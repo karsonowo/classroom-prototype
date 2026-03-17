@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<title>Classroom DSE Galaxy</title>
+
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap"
+		rel="stylesheet">
+
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
+
+		body {
+			font-family: "Noto Sans TC", "PingFang TC", "Microsoft YaHei", Arial, sans-serif;
+			background-color: #f8f9fa;
+			color: #fff;
+			height: 100vh;
+			overflow: hidden;
+		}
+
+		/* Top & Bottom Navs */
+		.top-nav {
+			position: fixed;
+			top: 0;
+			left: 0;
+			right: 0;
+			height: 10vh;
+			background-color: #2B469C;
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			padding: 0 3rem;
+			z-index: 1000;
+			font-weight: 500;
+		}
+
+		.top-nav .logo {
+			font-size: 1.6rem;
+			font-weight: 700;
+			color: white;
+			text-decoration: none;
+		}
+
+		.top-nav .right {
+			display: flex;
+			align-items: center;
+			gap: 2rem;
+		}
+
+		.dropdown {
+			position: relative;
+		}
+
+		.dropdown-btn {
+			background: none;
+			border: none;
+			color: white;
+			font-size: 1.1rem;
+			cursor: pointer;
+			padding: 0.6rem 1rem;
+		}
+
+		.dropdown-content {
+			display: none;
+			position: absolute;
+			background-color: #003366;
+			min-width: 160px;
+			top: 100%;
+			right: 0;
+		}
+
+		.dropdown-content a {
+			color: white;
+			padding: 0.8rem 1.2rem;
+			text-decoration: none;
+			display: block;
+		}
+
+		.dropdown-content a:hover {
+			background-color: #0055b3;
+		}
+
+		.dropdown:hover .dropdown-content {
+			display: block;
+		}
+
+		.nav-btn {
+			background: white;
+			color: #2B469C;
+			border: none;
+			padding: 0.7rem 1.4rem;
+			font-size: 1.1rem;
+			font-weight: 600;
+			cursor: pointer;
+			border-radius: 4px;
+		}
+
+		.bottom-nav {
+			position: fixed;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			height: 10vh;
+			background-color: #2B469C;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			z-index: 1000;
+		}
+
+		.bottom-nav img {
+			height: 65px;
+			width: auto;
+		}
+
+		/* Main Content */
+		.main-wrapper {
+			height: 80vh;
+			margin-top: 10vh;
+			padding: 1.5rem 0;
+			overflow-y: auto;
+
+			margin-bottom: 15vh;
+		}
+
+		.content-container {
+			width: 80%;
+			max-width: 1440px;
+			margin: 0 auto;
+			height: 100%;
+			display: flex;
+			flex-direction: column;
+			gap: 2rem;
+		}
+
+		h1 {
+			font-size: 36px;
+			color: #000;
+			text-align: center;
+		}
+
+		p {
+			font-size: 24px;
+			color: #000;
+			text-align: center;
+		}
+
+		.main-passage {
+			display: grid;
+			grid-template-areas: "passage question";
+			grid-template-columns: 1fr 1fr;
+			gap: 1rem;
+		}
+
+		.main-passage>div {
+			padding: 1rem;
+			color: #000;
+			border: 2px solid #000;
+			border-radius: 1rem;
+		}
+
+		.main-passage .passage {
+			grid-area: passage;
+			scrollbar-color: gray transparent;
+		}
+
+		.line {
+			display: flex;
+			flex-direction: row;
+			width: 97%;
+		}
+
+		.line .line-content {
+			flex: 1;
+		}
+
+		.line .line-number {
+			flex: 1;
+			width: 3ch;
+			color: #888;
+		}
+
+		.main-passage .passage .passage-content {
+			overflow-y: scroll;
+			max-height: 55vh;
+			scrollbar-color: gray transparent;
+		}
+
+		.main-passage .passage .line-number {
+			flex: 1;
+		}
+
+		.main-passage .passage h4 {
+			font-weight: 500;
+			text-align: center;
+			font-size: 110%;
+		}
+
+		.main-passage .passage img {
+			align-self: center;
+			width: 50%;
+			padding-top: 1rem;
+		}
+
+		.main-passage .question {
+			grid-area: question;
+			overflow-y: scroll;
+			scrollbar-color: gray transparent;
+			max-height: 60vh;
+		}
+
+		.question table {
+			margin: .5rem 0;
+			width: 100%;
+		}
+
+		.question table.row-only-border td {
+			border: none;
+		}
+
+		.question table td.noun {
+			text-align: left;
+			padding: 0.6em 1em;
+			padding-left: 4.8ch;
+			/* ≈ space for "(adj.) " or "(n.) " */
+			text-indent: -4.8ch;
+			/* negative indent pulls first line back */
+			hanging-punctuation: first;
+			/* optional – modern browsers only */
+		}
+
+		/* Optional: make sure long words don't break layout */
+		.question table td.noun {
+			hyphens: auto;
+			overflow-wrap: break-word;
+		}
+
+		.question table,
+		.question th,
+		.question td {
+			border: 2px solid #000;
+			border-collapse: collapse;
+			font-weight: 400;
+		}
+
+		.question table tbody tr th * {
+			margin: 0 2px;
+		}
+
+		.question .clickable-word {
+			cursor: pointer;
+			border-radius: 3px;
+			transition: background-color 0.15s, color 0.15s;
+			padding: 2px 0;
+		}
+
+		.question .clickable-word.selected {
+			color: #dd8500;
+		}
+
+		.question .clickable-word:not(.selected):hover {
+			background-color: rgba(0, 80, 160, 0.05);
+			color: #204673;
+		}
+
+		.passage-content .paragraph-number {
+			color: #808BAF;
+			padding-right: 1rem;
+		}
+
+		.question input[type="text"] {
+			background: none;
+			width: 96%;
+			border-radius: 1rem;
+			border: 2px solid #000;
+			padding: .5rem;
+			margin: 1rem 2%;
+			font-size: .9em;
+		}
+
+		.question input[type="submit"] {
+			border-radius: 1rem;
+			border: 2px solid #000;
+			padding: .5rem;
+			margin: 1rem 0;
+			cursor: pointer;
+		}
+
+		.mc-option {
+			display: flex;
+			align-items: flex-start;
+			margin: 0.9rem 0;
+			gap: 0.8rem;
+			cursor: pointer;
+			border-radius: 6px;
+			transition: background 0.15s;
+			justify-content: center;
+		}
+
+		.mc-option input[type="radio"] {
+			flex-shrink: 0;
+			margin-top: 0.3rem;
+			accent-color: #000;
+		}
+
+		.mc-option span {
+			flex: 1;
+		}
+
+		.timeline-container input[type="text"] {
+			max-width: 80px;
+			margin: 0 auto;
+			font-weight: bold;
+			text-transform: uppercase;
+		}
+
+		.timeline-container input[type="text"]::placeholder {
+			color: #aaa;
+			font-weight: normal;
+			text-transform: none;
+		}
+
+		/* Vocabulary hover popup - only one at a time + bridge */
+		.vocab {
+			color: #dd8500;
+			cursor: help;
+			position: relative;
+			display: inline-block;
+			/* important for bridge */
+			text-decoration: underline dotted #dd8500 2px;
+			transition: color 0.15s ease;
+		}
+
+		.vocab:hover {
+			color: #dd8500;
+		}
+
+		/* Invisible bridge so tooltip never disappears when moving down */
+		.vocab::before {
+			content: "";
+			position: absolute;
+			inset: -20px -4px 0 -4px;
+			/* covers the gap + extra safety */
+			z-index: 1;
+			pointer-events: auto;
+			background: transparent;
+		}
+
+		/* The tooltip container */
+		.vocab .vocab-tooltip {
+			position: absolute;
+			bottom: 110%;
+			left: 50%;
+			transform: translateX(-50%);
+			margin-bottom: 6px;
+
+			padding: 12px 16px;
+			min-width: 240px;
+			max-width: 540px;
+
+			background-color: #2B469C;
+			color: white;
+			font-size: 0.95rem;
+			line-height: 1.45;
+			border-radius: 8px;
+			box-shadow: 0 5px 15px rgba(0, 0, 0, 0.28);
+
+			opacity: 0;
+			visibility: hidden;
+			pointer-events: none;
+
+			transition:
+				opacity 0.18s ease,
+				transform 0.18s ease,
+				visibility 0s linear 0.18s;
+		}
+
+		/* Show tooltip ONLY when .active class is added by JS */
+		.vocab.active .vocab-tooltip {
+			opacity: 1;
+			visibility: visible;
+			transform: translateX(-50%) translateY(-4px);
+			pointer-events: auto;
+		}
+
+		/* Small triangle arrow */
+		.vocab .vocab-tooltip::before {
+			content: "";
+			position: absolute;
+			top: 100%;
+			left: 50%;
+			transform: translateX(-50%);
+			border: 8px solid transparent;
+			border-top-color: #2B469C;
+		}
+
+		/* Inside tooltip layout (your existing classes) */
+		.vocab-tooltip .vocab-grid {
+			display: flex;
+			flex-direction: row;
+		}
+
+		.vocab-tooltip p {
+			font-size: 1rem;
+			color: #ffd700;
+			font-weight: 500;
+			white-space: nowrap;
+		}
+
+		.vocab-tooltip .meaning {
+			font-weight: 400;
+			margin-bottom: 0.35em;
+		}
+
+		.vocab-tooltip .pos {
+			font-style: italic;
+			color: #e0e8ff;
+			margin: 0 0.5em 0.5em 0.5em;
+		}
+
+		.vocab-tooltip .audio-placeholder {
+			color: #ffd700;
+			font-weight: 500;
+		}
+	</style>
+</head>
+
+<body>
+	<audio id="vocab-audio" preload="auto"></audio>
+	<nav class="top-nav">
+		<a class="logo" href="https://karsonowo.github.io/classroom-prototype/eResources.html">課室教材資源庫</a>
+		<div class="right">
+			<div class="dropdown"><button class="dropdown-btn">程度 ▼</button>
+				<div class="dropdown-content"><a href="/primary">小學</a><a href="/secondary">中學</a></div>
+			</div>
+			<div class="dropdown"><button class="dropdown-btn">科目 ▼</button>
+				<div class="dropdown-content"><a href="/chinese">中文</a><a href="/english">英文</a><a
+						href="/mathematics">數學</a></div>
+			</div>
+			<div class="dropdown"><button class="dropdown-btn">應試 ▼</button>
+				<div class="dropdown-content"><a href="/hkat">HKAT</a><a href="/tsa">TSA</a><a href="/sspa">SSPA</a><a
+						href="/hkdse">HKDSE</a></div>
+			</div>
+			<div class="dropdown"><button class="dropdown-btn">主題 ▼</button>
+				<div class="dropdown-content"><a href="/idiom">成語天地</a><a href="/grammar">語法世界</a></div>
+			</div>
+			<button class="nav-btn">Login</button>
+		</div>
+	</nav>
+
+	<div class="main-wrapper">
+		<div class="content-container">
+			<h1>Classroom DSE Galaxy</h1>
+			<div class="main-passage">
+				<div class="passage">
+					<div class="passage-content">
+						<h4>Speech by Michael Hui</h4>
+						<h4>Winner of Lifetime achievement Award, Golden Globes 2023</h4>
+						<div style="display: flex; justify-content: center">
+							<video
+								src="https://karsonowo.github.io/classroom-prototype/dse-video.mp4"
+								autoplay
+								muted
+								loop
+								playsinline
+								controls
+								style="width:50%">
+							</video>
+						</div>
+						<br>
+						<div class="line">
+							<div class="line-number">
+								1<br><br><br><br>5<br><br><br><br><br>10<br><br><br><br><br>15　<br><br><br><br><br>20
+							</div>
+							<div class="line-passage">
+								<span class="paragraph-number">[1]</span>Some say life is a journey and it's about
+								growing and changing and coming to terms with who and what you are. This is so true to
+								me. I had been playing drama for eight years before I became a stage director. I had
+								been directing plays for five years before I was invited to direct a film. I had
+								rejected the
+								<span class="vocab"
+									data-audio="https://karsonowo.github.io/classroom-prototype/01_invitation.mp3">invitation
+									<span class="vocab-tooltip">
+										<div class="vocab-grid">
+											<p>invitation</p>
+											<div class="pos">(n.)</div>
+											<div class="audio-placeholder">🔊</div>
+										</div>
+										<div class="meaning">A fan-shaped structure or formation, often used
+											metaphorically for something spreading out like a fan</div>
+									</span>
+								</span>
+								several times before I directed my first film and won the Hong Kong Film Awards for Best
+								New Director in the 1980s. Theatre production and film production are entirely
+								different. I had never started working at 5am until I directed the first film. I can
+								still recall
+								<span class="vocab"
+									data-audio="https://karsonowo.github.io/classroom-prototype/02_overcoming.mp3">overcoming
+									<span class="vocab-tooltip">
+										<div class="vocab-grid">
+											<p>overcome</p>
+											<div class="pos">(v.)</div>
+											<div class="audio-placeholder">🔊</div>
+										</div>
+										<div class="meaning">If you overcome something, you deal with a problem, fear,
+											or difficulty and don't let it stop you.</div>
+									</span>
+								</span>
+								my
+								<span class="vocab"
+									data-audio="https://karsonowo.github.io/classroom-prototype/03_anxiety.mp3">anxiety
+									<span class="vocab-tooltip">
+										<div class="vocab-grid">
+											<p>anxiety</p>
+											<div class="pos">(n.)</div>
+											<div class="audio-placeholder">🔊</div>
+										</div>
+										<div class="meaning">If you feel anxiety, you feel very worried or nervous about
+											something that might happen.</div>
+									</span>
+								</span>
+								and
+								<span class="vocab"
+									data-audio="https://karsonowo.github.io/classroom-prototype/04_pull_oneself_together.mp3">pull
+									oneself together
+									<span class="vocab-tooltip">
+										<div class="vocab-grid">
+											<p>pull oneself together</p>
+											<div class="pos">(phrase)</div>
+											<div class="audio-placeholder">🔊</div>
+										</div>
+										<div class="meaning">If you pull yourself together, you stop feeling upset and
+											try to stay calm and focused again.</div>
+									</span>
+								</span>
+								to give clear directions to the crew.
+								<br>
+								<span class="paragraph-number">[2]</span>That year, I was awarded the best new director.
+								The award meant a lot to me, and had a great
+								<span class="vocab"
+									data-audio="https://karsonowo.github.io/classroom-prototype/05_impact.mp3">impact
+									<span class="vocab-tooltip">
+										<div class="vocab-grid">
+											<p>impact</p>
+											<div class="pos">(n.)</div>
+											<div class="audio-placeholder">🔊</div>
+										</div>
+										<div class="meaning">If something has an impact, it means it changes or affects
+											something in a strong way.</div>
+									</span>
+								</span>
+								on me. It was not to
+								<span class="vocab"
+									data-audio="https://karsonowo.github.io/classroom-prototype/06_acknowledge.mp3">acknowledge
+									<span class="vocab-tooltip">
+										<div class="vocab-grid">
+											<p>acknowledge</p>
+											<div class="pos">(v.)</div>
+											<div class="audio-placeholder">🔊</div>
+										</div>
+										<div class="meaning">If you acknowledge something, you accept that it is true or
+											show that you notice it.</div>
+									</span>
+								</span>
+								how well I did in the past, but to show that more was expected from me in the coming
+								years. Since then, I was better known for being an award-winning film director than a
+								stage actor and director.
+								<br>
+								<span class="paragraph-number">[3]</span>I have been shooting
+								<span class="vocab"
+									data-audio="https://karsonowo.github.io/classroom-prototype/07_numerous.mp3">numerous
+									<span class="vocab-tooltip">
+										<div class="vocab-grid">
+											<p>numerous</p>
+											<div class="pos">(adj.)</div>
+											<div class="audio-placeholder">🔊</div>
+										</div>
+										<div class="meaning">If something is numerous, there are many of it; it means a
+											large number.</div>
+									</span>
+								</span>
+								films for over 40 years. I am at the presentation ceremony today to receive this
+								honorary award. I thank my family for this achievement. At this is a
+								<span class="vocab"
+									data-audio="https://karsonowo.github.io/classroom-prototype/08_monumental.mp3">monumental
+									<span class="vocab-tooltip">
+										<div class="vocab-grid">
+											<p>monumental</p>
+											<div class="pos">(adj.)</div>
+											<div class="audio-placeholder">🔊</div>
+										</div>
+										<div class="meaning">If something is monumental, it is extremely large,
+											important, or very impressive.</div>
+									</span>
+								</span>
+								moment, I'm so
+								<span class="vocab"
+									data-audio="https://karsonowo.github.io/classroom-prototype/09_appreciative.mp3">appreciative
+									<span class="vocab-tooltip">
+										<div class="vocab-grid">
+											<p>appreciative </p>
+											<div class="pos">(adj.)</div>
+											<div class="audio-placeholder">🔊</div>
+										</div>
+										<div class="meaning">If someone is appreciative, they feel thankful and show
+											that they are pleased with what someone has done.</div>
+									</span>
+								</span>
+								to people who have had a hand in getting me here to the award. My crew and my cast, you
+								are my equals, you are my betters. I could have never been here without you.
+								<br>
+								<span class="paragraph-number">[4]</span>To all my fellows, I do not feel
+								<span class="vocab"
+									data-audio="https://karsonowo.github.io/classroom-prototype/10_elevated.mp3">elevated
+									<span class="vocab-tooltip">
+										<div class="vocab-grid">
+											<p>elevated</p>
+											<div class="pos">(adj.)</div>
+											<div class="audio-placeholder">🔊</div>
+										</div>
+										<div class="meaning">If something is elevated, it is higher than the ground or
+											greater in level, position, or importance.</div>
+									</span>
+								</span>
+								above any of you. I have had the pleasure to work with you all over the last 50 years.
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="question">
+					<form>
+						<span style="display: flex; justify-content:space-between"><span style="flex:6">1. Find a phrase
+								in paragraph 1 that means 'accepting a new situation and learning to deal with
+								it'.</span><span style="flex:1; text-align: right; color: #666;">(1 marks)</span></span>
+						<input type="text" id="q1" name="q1"><br>
+						<span style="display: flex; justify-content:space-between"><span style="flex:6">2. Look at the
+								following pronouns and answer who or what they refer to in the speech.</span><span
+								style="flex:1; text-align: right; color: #666;">(2 marks)</span></span>
+						<table>
+							<tr>
+								<th>Pronoun</th>
+								<th>Line</th>
+								<th>Reference</th>
+							</tr>
+							<tr>
+								<th>it</th>
+								<th>line 9</th>
+								<th><input type="text" id="q2a" name="q2a"></th>
+							</tr>
+							<tr>
+								<th>here</th>
+								<th>line 15</th>
+								<th><input type="text" id="q2b" name="q2b"></th>
+							</tr>
+						</table>
+						<span style="display: flex; justify-content:space-between"><span style="flex:6">3. Click on the
+								wrong word(s) and write down in the blanks what words should replace them. Write NO MORE
+								THAN TWO words for each answer.</span><span
+								style="flex:1; text-align: right; color: #888;">(4 marks)</span></span>
+						<table class="clickable">
+							<tr data-row="1">
+								<th>
+									<span class="clickable-word" id="q3aa" value="1">This</span>
+									<span class="clickable-word" id="q3aa" value="2">is</span>
+									<span class="clickable-word" id="q3aa" value="3">a</span>
+									<span class="clickable-word" id="q3aa" value="4">speech</span>
+									<span class="clickable-word" id="q3aa" value="5">given</span>
+									<span class="clickable-word" id="q3aa" value="6">by</span>
+									<span class="clickable-word" id="q3aa" value="7">an</span>
+									<span class="clickable-word" id="q3aa" value="8">inexperienced</span>
+								</th>
+								<th><input type="text" id="q3ab" name="q3ab"></th>
+							</tr>
+							<tr data-row="2">
+								<th>
+									<span class="clickable-word" id="q3ba" value="1">actor</span>
+									<span class="clickable-word" id="q3ba" value="2">who</span>
+									<span class="clickable-word" id="q3ba" value="3">was</span>
+									<span class="clickable-word" id="q3ba" value="4">awarded</span>
+									<span class="clickable-word" id="q3ba" value="5">the</span>
+									<span class="clickable-word" id="q3ba" value="6">honorary</span>
+									<span class="clickable-word" id="q3ba" value="7">award</span>
+								</th>
+								<th><input type="text" id="q3bb" name="q3bb"></th>
+							</tr>
+							<tr data-row="3">
+								<th>
+									<span class="clickable-word" id="q3ca" value="1">for</span>
+									<span class="clickable-word" id="q3ca" value="2">his</span>
+									<span class="clickable-word" id="q3ca" value="3">contribution</span>
+									<span class="clickable-word" id="q3ca" value="4">to</span>
+									<span class="clickable-word" id="q3ca" value="5">acting</span>
+									<span class="clickable-word" id="q3ca" value="6">for</span>
+								</th>
+								<th><input type="text" id="q3c-b" name="q3cb"></th>
+							</tr>
+							<tr data-row="4">
+								<th>
+									<span class="clickable-word" id="q3da" value="1">less</span>
+									<span class="clickable-word" id="q3da" value="2">than</span>
+									<span class="clickable-word" id="q3da" value="3">40</span>
+									<span class="clickable-word" id="q3da" value="4">years</span>
+									<span class="clickable-word" id="q3da" value="5">in</span>
+									<span class="clickable-word" id="q3da" value="6">the</span>
+									<span class="clickable-word" id="q3da" value="7">industry</span>
+								</th>
+								<th><input type="text" id="q3db" name="q3db"></th>
+							</tr>
+						</table><br>
+						<span style="display: flex; justify-content:space-between"><span style="flex:6">4. Find words or
+								phrases in paragraphs 3-4 to match the following definitions below.</span><span
+								style="flex:1; text-align: right; color: #888;">(4 marks)</span></span>
+						<table class="row-only-border">
+							<colgroup>
+								<col style="width: 8%;">
+								<col style="width: 25%;">
+								<col style="width: 67%;">
+							</colgroup>
+							<tr>
+								<td style="text-align: center;">(i)</td>
+								<td><input type="text" id="q4a" name="q4a"></td>
+								<td style="text-align: left"><span
+										style="font-style: italic; padding: 0 .5rem;">(adj.)</span>very important and
+									having a great influence</td>
+							</tr>
+							<tr>
+								<td style="text-align: center;">(ii)</td>
+								<td><input type="text" id="q4b" name="q4b"></td>
+								<td class="noun"><span style="font-style: italic; padding: 0 .5rem;">(n.)</span>people
+									with the same importance and deserving the same treatment</td>
+							</tr>
+							<tr>
+								<td style="text-align: center;">(iii)</td>
+								<td><input type="text" id="q4c" name="q4c"></td>
+								<td class="noun"><span style="font-style: italic; padding: 0 .5rem;">(n.)</span>people
+									who are more intelligent or more important than you</td>
+							</tr>
+							<tr>
+								<td style="text-align: center;">(iv)</td>
+								<td><input type="text" id="q4d" name="q4d"></td>
+								<td style="text-align: left"><span
+										style="font-style: italic; padding: 0 .5rem;">(adj.)</span>high in rank</td>
+							</tr>
+						</table><br>
+						<span style="display: flex; justify-content:space-between"><span style="flex:6">5. According to
+								paragraphs 1-2, which of the following is NOT true?</span><span
+								style="flex:1; text-align: right; color: #888;">(1 marks)</span></span><br>
+						<div style="padding-left: 1.2rem; padding-top: 0.8rem;">
+							<label class="mc-option">
+								<input type="radio" id="q5" name="q5" value="A">
+								<span>Changes in career path have enabled the director to understand more about
+									himself.</span>
+							</label>
+							<label class="mc-option">
+								<input type="radio" id="q5" name="q5" value="B">
+								<span>Theatre production and film production are basically the same form of art.</span>
+							</label>
+							<label class="mc-option">
+								<input type="radio" id="q5" name="q5" value="C">
+								<span>Early call time is very common in the filmmaking industry.</span>
+							</label>
+							<label class="mc-option">
+								<input type="radio" id="q5" name="q5" value="D">
+								<span>People tend to raise their expectation for an award-winning director.</span>
+							</label>
+						</div><br>
+						<span style="display: flex; justify-content:space-between"><span style="flex:6">6. What happened
+								in the following years? Write the letters (A-E) in the boxes.</span><span
+								style="flex:1; text-align: right; color: #888;">(5 marks)</span></span>
+						<div class="timeline-container" style="margin: 2rem 0 3rem;">
+							<!-- Input boxes row -->
+							<div
+								style="display: flex; justify-content: space-between; gap: 1rem; margin-bottom: 0.8rem; max-width: 1000px; margin-left: auto; margin-right: auto;">
+								<input type="text" id="q6a" name="q6a" maxlength="1"
+									style="width: 100%; text-align: center; font-size: 1.3rem; padding: 0.6rem; border: 2px solid #000; border-radius: 6px;">
+								<input type="text" id="q6b" name="q6b" maxlength="1"
+									style="width: 100%; text-align: center; font-size: 1.3rem; padding: 0.6rem; border: 2px solid #000; border-radius: 6px;">
+								<input type="text"
+									style="width: 100%; text-align: center; font-size: 1.3rem; padding: 0.6rem; border: 2px solid #000; border-radius: 6px;"
+									disabled value="E">
+								<input type="text" id="q6c" name="q6c" maxlength="1"
+									style="width: 100%; text-align: center; font-size: 1.3rem; padding: 0.6rem; border: 2px solid #000; border-radius: 6px;">
+								<input type="text" id="q6d" name="q6d" maxlength="1"
+									style="width: 100%; text-align: center; font-size: 1.3rem; padding: 0.6rem; border: 2px solid #000; border-radius: 6px;">
+								<input type="text" id="q6e" name="q6e" maxlength="1"
+									style="width: 100%; text-align: center; font-size: 1.3rem; padding: 0.6rem; border: 2px solid #000; border-radius: 6px;">
+							</div>
+							<div
+								style="font-style:consolas; text-align: center; margin: 1.2rem 0; font-size: 2.2rem; color: #000; letter-spacing: -2px; line-height: 1;">
+								==================================⇒
+
+							</div>
+
+							<!-- Year labels -->
+							<div
+								style="display: flex; justify-content: space-between; max-width: 1000px; margin: 0 auto; font-weight: bold; color: #000; font-size: 1.1rem;">
+								<div style="flex: 1; text-align: center;">1960s</div>
+								<div style="flex: 1; text-align: center;"></div>
+								<div style="flex: 1; text-align: center;"></div>
+								<div style="flex: 1; text-align: center;"></div>
+								<div style="flex: 1; text-align: center;">Present</div>
+							</div>
+						</div>
+
+						<!-- Options table -->
+						<table style="width: 100%; max-width: 1000px; border-collapse: collapse; font-size: 1.1rem;">
+							<tr>
+								<td style="width: 50%; padding: 0.6rem; border: 1px solid #ccc; background: #f8f9fa;">
+									<strong>A.</strong> playing dramas
+								</td>
+								<td style="width: 50%; padding: 0.6rem; border: 1px solid #ccc; background: #f8f9fa;">
+									<strong>B.</strong> awarded the honorary award
+								</td>
+							</tr>
+							<tr>
+								<td style="padding: 0.6rem; border: 1px solid #ccc;">
+									<strong>C.</strong> awarded the best new director
+								</td>
+								<td style="padding: 0.6rem; border: 1px solid #ccc;">
+									<strong>D.</strong> directing stage plays
+								</td>
+							</tr>
+							<tr>
+								<td style="padding: 0.6rem; border: 1px solid #ccc; background: #f8f9fa;">
+									<strong>E.</strong> rejecting filmmaking invitations
+								</td>
+								<td style="padding: 0.6rem; border: 1px solid #ccc; background: #f8f9fa;">
+									<strong>F.</strong> directing the first film
+								</td>
+							</tr>
+						</table>
+						<div style="display: flex; align-items: center; justify-content: center">
+							<input type="submit" value="Submit" style="align-self: center;">
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<nav class="bottom-nav">
+		<img src="https://classroom.com.hk/wp-content/uploads/2026/02/CLASSROOM-R-Guide_white.png"
+			alt="Classroom Guide">
+	</nav>
+	<audio id="vocab-audio" preload="none"></audio>
+	<script>
+		document.addEventListener('DOMContentLoaded', () => {
+			// ────────────────────────────────────────────────
+			// Vocabulary tooltip + audio playback
+			// ────────────────────────────────────────────────
+			const vocabs = document.querySelectorAll('.vocab');
+			const audioPlayer = document.getElementById('vocab-audio');
+			let activeVocab = null;
+
+			if (!audioPlayer) {
+				console.warn('Audio element #vocab-audio not found.');
+			}
+
+			vocabs.forEach(vocab => {
+				// Hover → show tooltip
+				vocab.addEventListener('mouseenter', () => {
+					if (activeVocab && activeVocab !== vocab) return;
+					if (!activeVocab) {
+						vocab.classList.add('active');
+						activeVocab = vocab;
+					}
+				});
+
+				// Leave → hide tooltip (small delay)
+				const closeHandler = () => {
+					setTimeout(() => {
+						if (activeVocab === vocab && !vocab.matches(':hover')) {
+							vocab.classList.remove('active');
+							activeVocab = null;
+						}
+					}, 180);
+				};
+				vocab.addEventListener('mouseleave', closeHandler);
+
+				// Click → play audio + toggle tooltip
+				vocab.addEventListener('click', (e) => {
+					e.stopPropagation();
+
+					const audioSrc = vocab.dataset.audio;
+					if (audioSrc && audioPlayer) {
+						audioPlayer.pause();
+						audioPlayer.currentTime = 0;
+						audioPlayer.src = audioSrc;
+
+						audioPlayer.play().catch(err => {
+							console.warn('Audio play failed:', err.message);
+						});
+					} else if (!audioSrc) {
+						console.warn('Missing data-audio on vocab:', vocab.textContent.trim());
+					}
+
+					// Toggle tooltip
+					if (activeVocab !== vocab) {
+						vocabs.forEach(v => v.classList.remove('active'));
+						vocab.classList.add('active');
+						activeVocab = vocab;
+					} else {
+						vocab.classList.remove('active');
+						activeVocab = null;
+					}
+				});
+			});
+
+			// Click outside → close all tooltips
+			document.addEventListener('click', (e) => {
+				if (!e.target.closest('.vocab')) {
+					vocabs.forEach(v => v.classList.remove('active'));
+					activeVocab = null;
+				}
+			});
+
+			// ────────────────────────────────────────────────
+			// Clickable wrong-word selector (your existing feature)
+			// ────────────────────────────────────────────────
+			const allClickableWords = document.querySelectorAll('.clickable-word');
+			allClickableWords.forEach(word => {
+				word.addEventListener('click', () => {
+					word.classList.toggle('selected');
+				});
+			});
+
+			// ────────────────────────────────────────────────
+			// Form submit → collect answers to URL
+			// ────────────────────────────────────────────────
+			// ────────────────────────────────────────────────
+			// Form submit → collect ALL relevant answers to URL
+			// ────────────────────────────────────────────────
+			const form = document.querySelector('form');
+			if (form) {
+				form.addEventListener('submit', (e) => {
+					e.preventDefault();
+
+					const params = new URLSearchParams();
+
+					// 1. Collect ALL text inputs (q1, q2a–q2d, q4a–q4d, etc.)
+					form.querySelectorAll('input[type="text"]').forEach(input => {
+						if (input.name && input.value.trim()) {
+							params.append(input.name, input.value.trim());
+						}
+					});
+
+					// 2. Collect radio buttons (e.g. q5 = A/B/C/D)
+					const selectedRadio = form.querySelector('input[type="radio"]:checked');
+					if (selectedRadio && selectedRadio.name) {
+						params.append(selectedRadio.name, selectedRadio.value);
+					}
+
+					// 3. Collect selected clickable words per row (q3a–q3d)
+					document.querySelectorAll('table.clickable tr[data-row]').forEach(row => {
+						const rowId = row.getAttribute('data-row');               // "1", "2", "3", "4"
+						const keyPos = `q3${String.fromCharCode(96 + Number(rowId))}a`;   // q3aa, q3ba, q3ca, q3da
+
+						const selected = row.querySelectorAll('.clickable-word.selected');
+
+						if (selected.length > 0) {
+							const values = Array.from(selected)
+								.map(span => span.getAttribute('value'))
+								.filter(v => v !== null)
+								.map(Number)                   // make sure they are numbers
+								.sort((a, b) => a - b);        // consistent order
+
+							params.append(keyPos, JSON.stringify(values));
+						}
+						// If nothing selected → we simply don't append → results page will see it as missing / []
+					});
+
+					// 4. Collect q6a–q6e (timeline boxes)
+					// (they are already text inputs → covered in step 1 above)
+
+					// Build final URL
+					let targetUrl = form.getAttribute('action') || 'eResources-dse-results-video.html';
+					const queryString = params.toString();
+					if (queryString) {
+						targetUrl += (targetUrl.includes('?') ? '&' : '?') + queryString;
+					}
+
+					// Redirect to results page
+					window.location.href = targetUrl;
+				});
+			}
+		});
+	</script>
+</body>
+
+</html>
