@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="zh-HK">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Classroom DSE Galaxy</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Noto Sans TC", "PingFang TC", "Microsoft YaHei", Arial, sans-serif;
+      background-color: #f8f9fa;
+      color: #fff;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    /* Top & Bottom Navs */
+    .top-nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 10vh;
+      background-color: #2B469C;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 3rem;
+      z-index: 1000;
+      font-weight: 500;
+    }
+
+    .top-nav .logo {
+      font-size: 1.6rem;
+      font-weight: 700;
+	  color: white;
+	  text-decoration: none;
+    }
+
+    .top-nav .right {
+      display: flex;
+      align-items: center;
+      gap: 2rem;
+    }
+
+    .dropdown {
+      position: relative;
+    }
+
+    .dropdown-btn {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 1.1rem;
+      cursor: pointer;
+      padding: 0.6rem 1rem;
+    }
+
+    .dropdown-content {
+      display: none;
+      position: absolute;
+      background-color: #003366;
+      min-width: 160px;
+      top: 100%;
+      right: 0;
+    }
+
+    .dropdown-content a {
+      color: white;
+      padding: 0.8rem 1.2rem;
+      text-decoration: none;
+      display: block;
+    }
+
+    .dropdown-content a:hover {
+      background-color: #0055b3;
+    }
+
+    .dropdown:hover .dropdown-content {
+      display: block;
+    }
+
+    .nav-btn {
+      background: white;
+      color: #2B469C;
+      border: none;
+      padding: 0.7rem 1.4rem;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 10vh;
+      background-color: #2B469C;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .bottom-nav img {
+      height: 65px;
+      width: auto;
+    }
+
+    /* Main Content */
+    .main-wrapper {
+      height: 80vh;
+      margin-top: 10vh;
+      padding: 1.5rem 0;
+      overflow-y: auto;
+      
+      margin-bottom: 15vh;
+    }
+
+    .content-container {
+      width: 80%;
+      max-width: 1440px;
+      margin: 0 auto;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    h1 {
+	  font-size: 36px;
+	  color: #2B469C;
+	  text-align: center;
+	}
+	p {
+	  font-size: 24px;
+	  color: #2B469C;
+	  text-align: center;
+	}
+	
+	/* Book grid layout */
+	.book-grid {
+	  display: grid;
+	  grid-template-columns: repeat(3, 1fr);   /* 3 columns */
+	  gap: 2.5rem 1.5rem;                      /* row gap / column gap */
+	  padding: 1.5rem 0;
+	}
+
+	/* Each book item */
+	.book-item {
+	    text-align: center;
+		padding: 3rem 2rem;
+		background: #F2F2F2;
+		box-shadow: 0 .5rem 1rem rgba(0, 0, 0, 0.1);
+		outline: .1rem solid #CCC;
+		outline-offset: -1rem;
+		cursor: pointer;
+		transition: all .5s;
+		text-decoration: none;
+	}
+
+	.book-item:hover {
+	  transform: translateY(-8px) scale(1.04);
+	  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.18);
+	}
+	
+	/* Book cover image */
+	.book-item img {
+	  height: 20rem;
+      transition: all .5s;
+	  aspect-ratio: 3 / 4;           /* typical book cover ratio – adjust if needed */
+	  object-fit: cover;
+	  border-radius: 8px;
+	  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+	  border: 1px solid #e0e0e0;
+	  background: #fff;              /* fallback if image has transparency */
+	}
+
+	/* Title below image */
+	.book-item h3 {
+	  margin-top: 1rem;
+	  font-size: 1.25rem;
+	  font-weight: 500;
+	  color: #2B469C;
+	  line-height: 1.4;
+	  text-decoration: none;
+	}
+
+	/* Optional: subtle overlay effect on hover */
+	.book-item::after {
+	  content: '';
+	  position: absolute;
+	  inset: 0;
+	  border-radius: 8px;
+	  background: rgba(43, 70, 156, 0.08);
+	  opacity: 0;
+	  transition: opacity 0.25s ease;
+	  pointer-events: none;
+	}
+
+	.book-item:hover::after {
+	  opacity: 1;
+	}
+
+	/* Responsive – stack on smaller screens */
+	@media (max-width: 1024px) {
+	  .book-grid {
+		grid-template-columns: repeat(2, 1fr);
+	  }
+	}
+
+	@media (max-width: 640px) {
+	  .book-grid {
+		grid-template-columns: 1fr;
+	  }
+	  
+	  .book-item h3 {
+		font-size: 1.15rem;
+	  }
+	}
+  </style>
+</head>
+<body>
+
+  <nav class="top-nav">
+    <a class="logo" href="https://karsonowo.github.io/classroom-prototype/eResources.html">課室教材資源庫</a>
+    <div class="right">
+      <div class="dropdown"><button class="dropdown-btn">程度 ▼</button><div class="dropdown-content"><a href="/primary">小學</a><a href="/secondary">中學</a></div></div>
+      <div class="dropdown"><button class="dropdown-btn">科目 ▼</button><div class="dropdown-content"><a href="/chinese">中文</a><a href="/english">英文</a><a href="/mathematics">數學</a></div></div>
+      <div class="dropdown"><button class="dropdown-btn">應試 ▼</button><div class="dropdown-content"><a href="/hkat">HKAT</a><a href="/tsa">TSA</a><a href="/sspa">SSPA</a><a href="/hkdse">HKDSE</a></div></div>
+      <div class="dropdown"><button class="dropdown-btn">主題 ▼</button><div class="dropdown-content"><a href="/idiom">成語天地</a><a href="/grammar">語法世界</a></div></div>
+      <button class="nav-btn">Login</button>
+    </div>
+  </nav>
+
+  <div class="main-wrapper">
+    <div class="content-container">
+
+		<h1>Classroom DSE Galaxy</h1>
+		<div class="book-grid">
+
+		  <!-- Example book 1 -->
+			<a class="book-item" href="https://karsonowo.github.io/classroom-prototype/eResources-dse-passages-photo.html">
+				<img src="https://karsonowo.github.io/classroom-prototype/dse_photo.png" alt="書名一" style="width:400px"></img>
+				<h3>Passage Photo</h3>
+			</a>
+
+			  <!-- Example book 2 -->
+			<a class="book-item" href="https://karsonowo.github.io/classroom-prototype/eResources-dse-passages-video.html">
+				<video src="https://karsonowo.github.io/classroom-prototype/dse-video.mp4" alt="書名二" style="width:400px"></video>
+				<h3>Passage Video</h3>
+			</a>
+
+		</div>
+
+    </div>
+  </div>
+
+  <nav class="bottom-nav">
+    <img src="https://classroom.com.hk/wp-content/uploads/2026/02/CLASSROOM-R-Guide_white.png" alt="Classroom Guide">
+  </nav>
+
+</body>
+</html>
